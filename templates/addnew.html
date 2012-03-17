@@ -1,0 +1,16 @@
+{% extends "main.html" %}
+{% block body %}
+<table class="center well">
+    <form name="input" action="/addnew" method="post">
+        <tr class="text-center">
+            <td>Enter Game Name</td>
+        </tr>
+        <tr>
+            <td><input type="text" name="gamename" /></td>
+        </tr>
+        <tr class="text-right">
+            <td><input type="submit" value="Submit" class="btn"/></td>
+        </tr>
+    </form>
+</table>
+{% endblock %}

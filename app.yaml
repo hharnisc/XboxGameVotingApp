@@ -5,5 +5,10 @@ api_version: 1
 threadsafe: true
 
 handlers:
+- url: /(.*\.(html|css|js|gif|jpg|png|ico))
+  static_files: static/\1
+  upload: static/.*
+  expiration: "1d"
+
 - url: /.*
   script: main.app
