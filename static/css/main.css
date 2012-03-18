@@ -127,7 +127,23 @@ input[type=text] {
     margin-top:20px;
     margin-bottom:20px;
 }
+.hide-overflow{
+    overflow : hidden ;
+}
+.game{
+    width:100px;
+    height:150px;
+    font:12px/1.3 'Segoe UI',Arial, sans-serif;
+    margin:20px;
+}
+.game-title{
+    font:17px/1 Lobster,Arial,sans-serif;
+}
 
 #container {
     width:800px;
+}
+
+th{
+    text-decoration:underline;
 }

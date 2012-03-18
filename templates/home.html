@@ -1,4 +1,109 @@
 {% extends "main.html" %}
 {% block body %}
-Home Page
+<div id="game-info" class="center">
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        updateGames();
+    });
+    function updateGames(){
+        $.getJSON("/getgamedata",function(data){
+            if(!data){
+                $("#game-info").attr("class","text-center").html("Could Not Fetch Game Data");
+                return;
+            }
+            ownedGames = data.owned;
+            neededGames = data.need;
+            $table = $("<table>").attr("class","center");
+            $table.append(
+                $("<tr>").append(
+                    $("<th>").html("<h2>Own</h2>"),
+                    $("<th>").html("<h2>Need</h2>")
+                )
+            )
+            for(var i =0 ; i < Math.max(ownedGames.length,neededGames.length);i++){
+                $tr = $("<tr>");
+                //add owned games
+                if(i < ownedGames.length){
+                    $tr.append(
+                            $("<td>")
+                                    .html(createOwnedGame(ownedGames[i]))
+                                    .attr("class","text-center")
+                    );
+                }
+                else{
+                    $tr.append(
+                        $("<td>")
+                    );
+                }
+                //add needed games
+                if(i < neededGames.length){
+                    $tr.append(
+                            $("<td>")
+                                    .html(createNeededGame(neededGames[i].game,neededGames[i].votes))
+                                    .attr("class","text-center")
+                    );
+                }
+                else{
+                    $tr.append(
+                            $("<td>")
+                    );
+                }
+                $table.append($tr);
+            }
+            $("#game-info").html($table);
+        });
+    }
+
+    function createOwnedGame(name){
+        return $("<div>").attr("class","game well game-title")
+                .html(name);
+    }
+
+    function createNeededGame(name,votes){
+        var count = 0;
+        for(var i = 0; i < name.length; i++){
+            if(count > 10){
+                name = name.substr(0,i) + "- " + name.substr(i)
+                count = 0;
+            }
+            if(name[i] == " "){
+                count = 0;
+            }
+            count += 1;
+        }
+        $game = $("<div>").attr("class","game well");
+        $game.append(
+            $("<table>")
+                .attr("position","relative")
+                .attr("height","100%")
+                .attr("width","100%")
+                .append(
+                $("<tr>").append(
+                    $("<td>").html("Owned").click(
+                        function(){
+                            //Post data here with JQuery and recall display function
+                    }),
+                    $("<td>").html("Vote Me!").click(
+                        function(){
+                            //Post data here with JQuery and recall display function
+                        })
+                ),
+                $("<tr>").append(
+                    $("<td>")
+                        .attr("class","game-title hide-overflow")
+                        .attr("colspan","2")
+                        .html(name)
+                ),
+                $("<tr>").append(
+                    $("<td>")
+                        .attr("colspan","2")
+                        .html("Votes: " + votes.toString())
+                )
+            )
+        );
+        return $game;
+    }
+</script>
 {% endblock %}
