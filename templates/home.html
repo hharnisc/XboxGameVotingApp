@@ -19,7 +19,7 @@
             ownedGames = data.owned;
             neededGames = data.need;
             //Create a table and add headers to it
-            $table = $("<table>").attr("class","center");
+            $table = $("<table>").attr("class","center light-well");
             $table.append(
                 $("<tr>").append(
                     $("<th>").html("<h2>Own</h2>"),
@@ -119,13 +119,12 @@
                         }),
                     $("<td>")
                         .attr("class","hover")
-                        .html("Vote Me!").click(
+                        .html("Vote Up").click(
                         function(){
                             //if this div is clicked post data to the server
                             //to say that this game has been voted on and display server response
                             $.post("/votegame", {gamename:name}, function(data){
                                 updateGames();
-                                setMessageBox("Test");
                                 var obj = $.parseJSON(data);
                                 if(obj.message){
                                     setMessageBox(obj.message);

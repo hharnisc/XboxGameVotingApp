@@ -5,7 +5,7 @@ body{
 }
 /* Table header decoration*/
 th{
-    text-decoration:underline;
+
 }
 /* Navigation Bar CSS */
 nav  {
@@ -131,6 +131,17 @@ input[type=text] {
     margin-top:20px;
     margin-bottom:20px;
 }
+/* A lighter well to use for forms and other decorative divs */
+.light-well{
+    font: bold 17px "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Geneva, Verdana;
+    background: #fcfcfc;
+    color: #616975;
+    border: 2px solid #616975;
+    padding:10px;
+    border-radius: 5px;
+    margin-top:20px;
+    margin-bottom:20px;
+}
 .hide-overflow{
     overflow : hidden ;
 }
@@ -140,6 +151,7 @@ input[type=text] {
     height:150px;
     font:12px/1.3 'Segoe UI',Arial, sans-serif;
     margin:20px;
+    padding:10px;
 }
 .game-title{
     font:17px/1 Lobster,Arial,sans-serif;
