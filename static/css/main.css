@@ -3,6 +3,10 @@ body{
     background: #a4bbcc;
     color:#ffffff;
 }
+/* Table header decoration*/
+th{
+    text-decoration:underline;
+}
 /* Navigation Bar CSS */
 nav  {
      display: block;
@@ -74,7 +78,7 @@ input[type=text] {
         -moz-box-shadow: 0px 0px 5px #26ade2;
         box-shadow: 0px 0px 5px #26ade2;
     }
-
+/* placement modification classes*/
 .center {
     margin-left: auto;
     margin-right: auto;
@@ -87,7 +91,7 @@ input[type=text] {
 .text-right{
     text-align: right;
 }
-
+/* button class - green*/
 .btn{
     background-color: #7FBF4D;
     border: 1px solid #63A62F;
@@ -115,7 +119,7 @@ input[type=text] {
         box-shadow: inset 0 1px 0 0 #8dbf67;
         cursor: pointer;
     }
-
+/* A well to use for forms and other decorative divs */
 .well{
     font: bold 17px "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Geneva, Verdana;
     /*font:18px/1 Lobster,Arial,sans-serif;*/
@@ -130,6 +134,7 @@ input[type=text] {
 .hide-overflow{
     overflow : hidden ;
 }
+/* game -- define the size of games used to generate table*/
 .game{
     width:100px;
     height:150px;
@@ -139,11 +144,27 @@ input[type=text] {
 .game-title{
     font:17px/1 Lobster,Arial,sans-serif;
 }
+/* hover -- change background and pointer when hovering over class */
+.hover{
 
+}
+    .hover:hover {
+        background: #26ade2;
+        cursor: pointer;
+        border-radius: 2px;
+    }
+/* main page container that all components are inserted*/
 #container {
     width:800px;
 }
-
-th{
-    text-decoration:underline;
+/* the popup message box*/
+#message-box {
+    background: #000000;
+    position: fixed;
+    padding:10px;
+    border-radius: 3px;
+    right:50px;
+    top:50px;
+    display:none;
 }
+

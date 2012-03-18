@@ -8,6 +8,9 @@
     <script type='text/javascript' src='/js/jquery-1.7.1.min.js'></script>
 </head>
 <body>
+    <div id="message-box">
+        This is an urgent message!
+    </div>
     <div id="container" class="center">
         <h1 class="text-center">Xbox Games</h1>
         <nav>
@@ -16,12 +19,30 @@
                 <li id="add-new"><a href="/addnew">Add New</a></li>
             </ul>
         </nav>
-        {% if info_message %}
-            <nav class="text-center">
-                {{info_message}}
-            </nav>
-        {% endif %}
         {% block body %}{% endblock %}
     </div>
+    <script type="text/javascript">
+        /*
+         * Display and update to the user and disappear after 3 seconds
+         */
+        function setMessageBox(message){
+            //update message
+            $("#message-box").html(message);
+            //show the message
+            $("#message-box").show();
+            //wait two seconds and slowly fade out message
+            setTimeout(function(){
+                $("#message-box").fadeOut("slow",function(){
+                    //animation complete
+                })
+            },3000);
+        }
+        {% if info_message %}
+        //if we have an incoming message from the server display it!
+        $(document).ready(function(){
+            setMessageBox("{{info_message}}");
+        });
+        {% endif %}
+    </script>
 </body>
 </html>

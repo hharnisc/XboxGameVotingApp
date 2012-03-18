@@ -2,19 +2,23 @@
 {% block body %}
 <div id="game-info" class="center">
 </div>
-
 <script type="text/javascript">
     $(document).ready(function(){
         updateGames();
     });
+    /*
+     * Update the list of games sent from the server
+     */
     function updateGames(){
         $.getJSON("/getgamedata",function(data){
             if(!data){
                 $("#game-info").attr("class","text-center").html("Could Not Fetch Game Data");
                 return;
             }
+            //grab owned games and needed games
             ownedGames = data.owned;
             neededGames = data.need;
+            //Create a table and add headers to it
             $table = $("<table>").attr("class","center");
             $table.append(
                 $("<tr>").append(
@@ -22,6 +26,7 @@
                     $("<th>").html("<h2>Need</h2>")
                 )
             )
+            //for whichever list is longer append the games to the table in order
             for(var i =0 ; i < Math.max(ownedGames.length,neededGames.length);i++){
                 $tr = $("<tr>");
                 //add owned games
@@ -32,9 +37,10 @@
                                     .attr("class","text-center")
                     );
                 }
+                //if we are out of games we own then add a placeholder
                 else{
                     $tr.append(
-                        $("<td>")
+                        $("<td>").attr("class","game")
                     );
                 }
                 //add needed games
@@ -45,23 +51,36 @@
                                     .attr("class","text-center")
                     );
                 }
+                //if we are out of games we need then add a placeholder
                 else{
                     $tr.append(
-                            $("<td>")
+                            $("<td>").attr("class","game")
                     );
                 }
+                //append the constructed row to the table
                 $table.append($tr);
             }
+            //add the table into the "game-info" div
             $("#game-info").html($table);
         });
     }
 
+    /*
+    * Create a div only displaying the name of the game
+    */
     function createOwnedGame(name){
         return $("<div>").attr("class","game well game-title")
                 .html(name);
     }
 
+    /*
+     * Create a div showing the name of the name,
+     * the number of votes, and buttons to vote/signify
+     * game is owned.
+     */
     function createNeededGame(name,votes){
+        //if we have a long name with no spaces (or words longer than 10 letters)
+        //insert a hyphen and a space so we get word wrapping in the divs
         var count = 0;
         for(var i = 0; i < name.length; i++){
             if(count > 10){
@@ -73,29 +92,55 @@
             }
             count += 1;
         }
+        //create a game div
         $game = $("<div>").attr("class","game well");
         $game.append(
+            //construct a table so the labels fit in the game div
             $("<table>")
                 .attr("position","relative")
                 .attr("height","100%")
                 .attr("width","100%")
                 .append(
+                // add set game owned functionality to the game
                 $("<tr>").append(
-                    $("<td>").html("Owned").click(
+                    $("<td>")
+                        .attr("class","hover")
+                        //if this div is clicked post data to the server
+                        //to say that this game is owned and display server response
+                        .html("Owned").click(
                         function(){
-                            //Post data here with JQuery and recall display function
-                    }),
-                    $("<td>").html("Vote Me!").click(
+                            $.post("/setgameowned", {gamename:name}, function(data){
+                                updateGames();
+                                var obj = $.parseJSON(data);
+                                if(obj.message){
+                                    setMessageBox(obj.message);
+                                }
+                            }).error(function() { setMessageBox("Error While Setting Game to Owned"); });
+                        }),
+                    $("<td>")
+                        .attr("class","hover")
+                        .html("Vote Me!").click(
                         function(){
-                            //Post data here with JQuery and recall display function
+                            //if this div is clicked post data to the server
+                            //to say that this game has been voted on and display server response
+                            $.post("/votegame", {gamename:name}, function(data){
+                                updateGames();
+                                setMessageBox("Test");
+                                var obj = $.parseJSON(data);
+                                if(obj.message){
+                                    setMessageBox(obj.message);
+                                }
+                            }).error(function() { setMessageBox("Error While Voting"); });
                         })
                 ),
+                //display the game title
                 $("<tr>").append(
                     $("<td>")
                         .attr("class","game-title hide-overflow")
                         .attr("colspan","2")
                         .html(name)
                 ),
+                //display the number of votes
                 $("<tr>").append(
                     $("<td>")
                         .attr("colspan","2")
