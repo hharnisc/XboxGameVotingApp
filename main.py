@@ -44,53 +44,57 @@ class AddNew(webapp.RequestHandler):
         self.response.out.write(template.render(path,template_values))
 
     def post(self):
-        #attempt to grab a cookie from the user
-        voted = self.request.cookies.get('voted', '')
-
-        #if user's cookie is still active then don't let them vote
-        if voted:
-            #send error message to user
-            template_values = {'info_message':'Maximum Daily Votes Reached'}
+        theTime = datetime.datetime.now()
+        if theTime.weekday() == 5 or theTime.weekday() == 6:
+            template_values = {'info_message':'Cannot Add Games On Saturday Or Sunday'}
         else:
-            validGame = True
-            #get the game title from the request
-            gamename=self.request.get('gamename')
+            #attempt to grab a cookie from the user
+            voted = self.request.cookies.get('voted', '')
 
-            #handle no input case
-            if not gamename:
-                template_values = {'info_message':'Please Enter Game Name'}
-                validGame = False
+            #if user's cookie is still active then don't let them vote
+            if voted:
+                #send error message to user
+                template_values = {'info_message':'Maximum Daily Votes Reached'}
+            else:
+                validGame = True
+                #get the game title from the request
+                gamename=self.request.get('gamename')
 
-            #attempt to locate the game in the database
-            results = Game.all().filter("title",gamename).fetch(1)
+                #handle no input case
+                if not gamename:
+                    template_values = {'info_message':'Please Enter Game Name'}
+                    validGame = False
 
-            #if game exists display error message
-            if len(results):
-                template_values = {'info_message':'Game Already Exists: ' + str(gamename)}
-                validGame = False
+                #attempt to locate the game in the database
+                results = Game.all().filter("title",gamename).fetch(1)
 
-            #add game to database if valid game
-            if validGame:
-                logging.info('Adding Game Name: ' + str(gamename))
-                #create a game
-                game = Game(title=gamename,owned=False)
-                #create a vote
-                vote = Vote()
-                vote.put()
-                #add the vote to the game's votes
-                game.votes.append(vote.key())
-                game.put()
-                #construct message to send to user
-                template_values = {'info_message':'Successfully Added ' + str(gamename)}
-                #create a cookie that expires at 23:59:59
-                C = Cookie.SimpleCookie()
-                C["voted"] = "voted"
-                theTime = datetime.datetime.now()
-                #set expiration for tonight at 23:59:59
-                expireTime = datetime.datetime(theTime.year,theTime.month,theTime.day,23,59,59)
-                C['voted']['expires'] = expireTime.strftime('%a, %d %b %Y %H:%M:%S') # Wdy, DD-Mon-YY HH:MM:SS
-                header_value = C.output(header='')
-                self.response.headers.add_header("Set-Cookie", header_value)
+                #if game exists display error message
+                if len(results):
+                    template_values = {'info_message':'Game Already Exists: ' + str(gamename)}
+                    validGame = False
+
+                #add game to database if valid game
+                if validGame:
+                    logging.info('Adding Game Name: ' + str(gamename))
+                    #create a game
+                    game = Game(title=gamename,owned=False)
+                    #create a vote
+                    vote = Vote()
+                    vote.put()
+                    #add the vote to the game's votes
+                    game.votes.append(vote.key())
+                    game.put()
+                    #construct message to send to user
+                    template_values = {'info_message':'Successfully Added ' + str(gamename)}
+                    #create a cookie that expires at 23:59:59
+                    C = Cookie.SimpleCookie()
+                    C["voted"] = "voted"
+                    theTime = datetime.datetime.now()
+                    #set expiration for tonight at 23:59:59
+                    expireTime = datetime.datetime(theTime.year,theTime.month,theTime.day,23,59,59)
+                    C['voted']['expires'] = expireTime.strftime('%a, %d %b %Y %H:%M:%S') # Wdy, DD-Mon-YY HH:MM:SS
+                    header_value = C.output(header='')
+                    self.response.headers.add_header("Set-Cookie", header_value)
 
         path = os.path.join(os.path.dirname(__file__), 'templates'+os.sep+'addnew.html')
         self.response.out.write(template.render(path,template_values))
@@ -122,36 +126,41 @@ class VoteGame(webapp.RequestHandler):
     Vote for a game
     """
     def post(self):
-        voted = self.request.cookies.get('voted', '')
-        #if user's cookie is still active then don't let them vote
-        if voted:
+        #get the current time in central time zone
+        theTime = datetime.datetime.now()
+        if theTime.weekday() == 5 or theTime.weekday() == 6:
             success = False
-            message = "Maximum Daily Votes Reached"
+            message = "No Votes Tallied On Saturday Or Sunday"
         else:
-            #check databse for game title
-            gamename=self.request.get('gamename')
-            result = Game.all().filter("title",gamename).fetch(1)[0]
-            #if title exists then add a vote to the game
-            if result:
-                #create a new vote
-                vote = Vote().put()
-                #add the vote to the result
-                result.votes.append(vote)
-                result.put()
-                C = Cookie.SimpleCookie()
-                C["voted"] = "voted"
-                #get the current time in central time zone
-                theTime = datetime.datetime.now()
-                #set expiration for tonight at 23:59:59
-                expireTime = datetime.datetime(theTime.year,theTime.month,theTime.day,23,59,59)
-                C['voted']['expires'] = expireTime.strftime('%a, %d %b %Y %H:%M:%S') # Wdy, DD-Mon-YY HH:MM:SS
-                header_value = C.output(header='')
-                self.response.headers.add_header("Set-Cookie", header_value)
-                success = True
-                message = "Vote has been received!"
-            else:
+            voted = self.request.cookies.get('voted', '')
+            #if user's cookie is still active then don't let them vote
+            if voted:
                 success = False
-                message = "Vote has failed."
+                message = "Maximum Daily Votes Reached"
+            else:
+                #check databse for game title
+                gamename=self.request.get('gamename')
+                result = Game.all().filter("title",gamename).fetch(1)[0]
+                #if title exists then add a vote to the game
+                if result:
+                    #create a new vote
+                    vote = Vote().put()
+                    #add the vote to the result
+                    result.votes.append(vote)
+                    result.put()
+                    C = Cookie.SimpleCookie()
+                    C["voted"] = "voted"
+
+                    #set expiration for tonight at 23:59:59
+                    expireTime = datetime.datetime(theTime.year,theTime.month,theTime.day,23,59,59)
+                    C['voted']['expires'] = expireTime.strftime('%a, %d %b %Y %H:%M:%S') # Wdy, DD-Mon-YY HH:MM:SS
+                    header_value = C.output(header='')
+                    self.response.headers.add_header("Set-Cookie", header_value)
+                    success = True
+                    message = "Vote has been received!"
+                else:
+                    success = False
+                    message = "Vote has failed."
         #transmit jason data to user
         self.response.out.write(json.dumps({"success":success,"message":message}))
 
