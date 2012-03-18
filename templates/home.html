@@ -70,7 +70,7 @@
     */
     function createOwnedGame(name){
         return $("<div>").attr("class","game well game-title")
-                .html(name);
+                .html(fixName(name));
     }
 
     /*
@@ -79,19 +79,7 @@
      * game is owned.
      */
     function createNeededGame(name,votes){
-        //if we have a long name with no spaces (or words longer than 10 letters)
-        //insert a hyphen and a space so we get word wrapping in the divs
-        var count = 0;
-        for(var i = 0; i < name.length; i++){
-            if(count > 10){
-                name = name.substr(0,i) + "- " + name.substr(i)
-                count = 0;
-            }
-            if(name[i] == " "){
-                count = 0;
-            }
-            count += 1;
-        }
+        disp_name = fixName(name);
         //create a game div
         $game = $("<div>").attr("class","game well");
         $game.append(
@@ -137,7 +125,7 @@
                     $("<td>")
                         .attr("class","game-title hide-overflow")
                         .attr("colspan","2")
-                        .html(name)
+                        .html(disp_name)
                 ),
                 //display the number of votes
                 $("<tr>").append(
@@ -148,6 +136,26 @@
             )
         );
         return $game;
+    }
+
+    /*
+     * Fix words with long names so they can be displayed easily
+     */
+    function fixName(name){
+        //if we have a long name with no spaces (or words longer than 10 letters)
+        //insert a hyphen and a space so we get word wrapping in the divs
+        var count = 0;
+        for(var i = 0; i < name.length; i++){
+            if(count > 10){
+                name = name.substr(0,i) + "- " + name.substr(i)
+                count = 0;
+            }
+            if(name[i] == " "){
+                count = 0;
+            }
+            count += 1;
+        }
+        return name;
     }
 </script>
 {% endblock %}

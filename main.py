@@ -106,13 +106,13 @@ class GetGameData(webapp.RequestHandler):
         results = Game.all().filter("owned",False).fetch(1000)
         needList = []
         for result in sorted(results,lambda a,b:cmp(len(b.votes),len(a.votes))):
-            needList.append({"game":result.title[:50],"votes":len(result.votes)})
+            needList.append({"game":result.title,"votes":len(result.votes)})
 
         #get all games that are owned, sorted alphabetically -- cutoff at 50 characters
         results = Game.all().filter("owned",True).order("title").fetch(1000)
         ownedList = []
         for result in sorted(results,lambda a,b:cmp(a.title.lower(),b.title.lower())):
-            ownedList.append(result.title[:50])
+            ownedList.append(result.title)
 
         #transmit jason data to user
         self.response.out.write(json.dumps({"owned":ownedList,"need":needList}))
